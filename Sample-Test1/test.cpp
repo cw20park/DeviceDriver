@@ -34,3 +34,21 @@ TEST(TestCaseName, Exception) {
 	DeviceDriver driver(&mock_device);
 	EXPECT_THROW(driver.read(0x2), std::exception);
 }
+
+TEST(TestCaseName, NormalWrite) {
+	MockDevice mock_device;
+	EXPECT_CALL(mock_device, read(0xA))
+		.WillOnce(Return(ERASED_DATA));
+	DeviceDriver driver(&mock_device);
+	
+	driver.write(0xA, 0x77);
+}
+
+TEST(TestCaseName, WriteException) {
+	MockDevice mock_device;
+	EXPECT_CALL(mock_device, read(0xA))
+		.WillOnce(Return(0x23));
+	DeviceDriver driver(&mock_device);
+
+	EXPECT_THROW(driver.write(0xA, 0x77), std::exception);
+}
