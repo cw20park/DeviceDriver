@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "../Project22/DeviceDriver.cpp"
+#include "../Project22/App.cpp"
 
 using namespace testing;
 using namespace std;
@@ -51,4 +52,32 @@ TEST(TestCaseName, WriteException) {
 	DeviceDriver driver(&mock_device);
 
 	EXPECT_THROW(driver.write(0xA, 0x77), std::exception);
+}
+
+TEST(TestCaseName, ApplicationRead)
+{
+	MockDevice mock_device;
+	EXPECT_CALL(mock_device, read)
+		.Times(25);
+
+	DeviceDriver driver(&mock_device);
+	Application app(&driver);
+	app.ReadAndPrint(0x00, 0x04);
+}
+TEST(TestCaseName, ApplicationWrite)
+{
+	MockDevice mock_device;
+	EXPECT_CALL(mock_device, read)
+		.Times(5)
+		.WillOnce(Return(ERASED_DATA))
+		.WillOnce(Return(ERASED_DATA))
+		.WillOnce(Return(ERASED_DATA))
+		.WillOnce(Return(ERASED_DATA))
+		.WillOnce(Return(ERASED_DATA));
+	EXPECT_CALL(mock_device, write)
+		.Times(5);
+
+	DeviceDriver driver(&mock_device);
+	Application app(&driver);
+	app.WriteAll(0x7);
 }
